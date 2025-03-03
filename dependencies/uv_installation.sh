@@ -14,11 +14,20 @@ echo 'Activating the venv virtual environment...'
 source .venv/bin/activate
 
 echo 'Installing Python dependencies with uv...'
-while IFS= read -r line || [[ -n "$line" ]]; do
-    if [[ -n "$line" && ! "$line" =~ ^[[:space:]]*# ]]; then
-        uv add "$line"
-    fi
-done < "dependencies/requirements.txt"
+# Checking to see if dependencies are empty or don't exist
+if grep -q "dependencies = \[\]" pyproject.toml 2>/dev/null || ! grep -q "dependencies =" pyproject.toml 2>/dev/null; then
+    
+    # Installing each Python dependency from the requirements.txt file with uv
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        if [[ -n "$line" && ! "$line" =~ ^[[:space:]]*# ]]; then
+            uv add "$line"
+        fi
+    done < "dependencies/requirements.txt"
+else
+
+    # Syncing any dependencies that are already in the pyproject.toml file
+    uv sync
+fi
 
 echo 'Creating a Jupyter notebook kernel using the uv venv...'
 python -m ipykernel install --user --name 'dkhundley_venv' --display-name 'dkhundley_venv'
