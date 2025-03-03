@@ -162,6 +162,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# uv files
+.venv/
+uv.lock
+.python-version
+
 # Extra ignores added by @dkhundley
 .DS_Store
 keys/
